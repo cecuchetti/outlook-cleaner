@@ -1,0 +1,28 @@
+{
+  "email": "tu-email@hotmail.com",
+  "oauth2": {
+    "client_id": "tu-client-id-aqui",
+    "tenant_id": "consumers",
+    "force_interactive_login": true
+  },
+  "cleaning": {
+    "sender_names_to_search": [
+      "Banco Galicia",
+      "Claro Video",
+      "Farmacity",
+      "NaranjaX",
+      "Beneficios EMINENT",
+      "Microsoft Azure",
+      "Equipo de cuentas Microsoft",
+      "DolarApp",
+      "Mercado Libre",
+      "Carrefour"
+    ],
+    "move_to_deleted": true
+  },
+  "imap": {
+    "server": "outlook.office365.com",
+    "mailbox": "Inbox"
+  }
+}
+
