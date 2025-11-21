@@ -20,7 +20,7 @@ Tool to automatically clean unwanted emails from your Outlook/Hotmail account us
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/cecuchetti/outlook-cleaner.git
 cd outlook-cleaner
 ```
 
