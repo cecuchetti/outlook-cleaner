@@ -86,11 +86,29 @@ curl -X POST https://your-app.onrender.com/api/v1/trigger-clean \
 
 ## Deployment
 
-### Render.com (Recommended)
+### Fly.io (Recommended for Free Persistence)
+Fly.io is the best option for free accounts because it provides persistent volumes, ensuring your login session never expires.
+
+1. **Install flyctl**: [Install instructions](https://fly.io/docs/hands-on/install-flyctl/).
+2. **Launch**:
+   ```bash
+   fly launch
+   ```
+   *When prompted, choose to copy settings from the existing `fly.toml`.*
+3. **Create Volume**:
+   ```bash
+   fly volumes create outlook_data --size 1
+   ```
+4. **Secrets**: Set your environment variables:
+   ```bash
+   fly secrets set AZURE_CLIENT_ID="..." AZURE_CLIENT_SECRET="..." REDIRECT_URI="https://your-app.fly.dev/callback" ...
+   ```
+5. **Deploy**:
+   ```bash
+   fly deploy
+   ```
+
+### Render.com
 1. **Web Service**: Create a new Web Service from your GitHub repo.
 2. **Start Command**: `uvicorn server:app --host 0.0.0.0 --port $PORT`
-3. **Persistence**: To keep your session active across redeploys, mount a **Persistent Disk** on `/data` and set the environment variable `CACHE_FILE=/data/token_cache.json`.
-
-## License
-
-MIT © [Enrique Cuchetti](https://github.com/ecuchetti)
+3. **Persistence**: Requires a paid plan for **Persistent Disks**. On free plans, the token will be lost periodically.
