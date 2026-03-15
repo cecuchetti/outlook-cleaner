@@ -1,6 +1,3 @@
-# Configuración local (no subir a GitHub)
-config.json
-
 # Python
 __pycache__/
 *.py[cod]
@@ -8,21 +5,42 @@ __pycache__/
 *.so
 .Python
 env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
 venv/
 ENV/
-.venv
+
+# Configuration and Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+config.json
+token_cache.json
 
 # IDEs
 .vscode/
 .idea/
+.cursor/
 *.swp
 *.swo
-*~
 
 # OS
 .DS_Store
 Thumbs.db
-
-# Logs
-*.log
-

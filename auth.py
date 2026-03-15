@@ -115,68 +115,85 @@ def authenticate_oauth2(imap_conn, email_address, access_token):
         return _authenticate_oauth2_manual(imap_conn, auth_bytes)
 
 
+def build_msal_app(client_id, client_secret=None, tenant_id="consumers"):
+    """Builds the MSAL application instance"""
+    authority = f"https://login.microsoftonline.com/{tenant_id}"
+    if client_secret:
+        return msal.ConfidentialClientApplication(
+            client_id,
+            authority=authority,
+            client_credential=client_secret
+        )
+    return msal.PublicClientApplication(
+        client_id,
+        authority=authority
+    )
+
+
+def get_auth_url(client_id, client_secret, redirect_uri, tenant_id="consumers"):
+    """Generates the authorization URL for the web flow"""
+    app = build_msal_app(client_id, client_secret, tenant_id)
+    scopes = ["https://outlook.office.com/IMAP.AccessAsUser.All"]
+    return app.get_authorization_request_url(scopes, redirect_uri=redirect_uri)
+
+
+def get_token_from_code(client_id, client_secret, redirect_uri, code, tenant_id="consumers"):
+    """Exchanges an authorization code for tokens"""
+    app = build_msal_app(client_id, client_secret, tenant_id)
+    scopes = ["https://outlook.office.com/IMAP.AccessAsUser.All"]
+    result = app.acquire_token_by_authorization_code(
+        code, 
+        scopes=scopes, 
+        redirect_uri=redirect_uri
+    )
+    return result
+
+
+def get_token_silent(client_id, client_secret, token_cache_json, tenant_id="consumers"):
+    """Attempts to get a token silently using the cache (refresh token)"""
+    cache = msal.SerializableTokenCache()
+    if token_cache_json:
+        cache.deserialize(token_cache_json)
+    
+    app = msal.ConfidentialClientApplication(
+        client_id,
+        authority=f"https://login.microsoftonline.com/{tenant_id}",
+        client_credential=client_secret,
+        token_cache=cache
+    )
+    
+    scopes = ["https://outlook.office.com/IMAP.AccessAsUser.All"]
+    accounts = app.get_accounts()
+    if accounts:
+        result = app.acquire_token_silent(scopes, account=accounts[0])
+        return result, cache.serialize()
+    return None, None
+
+
 def get_oauth2_token(client_id, tenant_id="consumers", email_address=None, force_interactive=False):
     """
-    Gets an OAuth2 access token using MSAL
-    
-    Requires registering an application in Azure AD:
-    1. Go to https://portal.azure.com
-    2. Azure Active Directory > App registrations > New registration
-    3. Name: "Outlook Cleaner"
-    4. Supported account types: "Personal Microsoft accounts only" or "Accounts in any organizational directory and personal Microsoft accounts"
-    5. Redirect URI: http://localhost (type: Public client/native)
-    6. API permissions > Add permission > Microsoft Graph > Delegated permissions > IMAP.AccessAsUser.All
-    7. Copy the Application (client) ID
-    
-    Args:
-        client_id: ID of the application registered in Azure AD
-        tenant_id: Tenant ID of your account or "consumers" for personal accounts
-        email_address: Optional email to pre-fill the login form
-        force_interactive: If True, always opens popup/browser (ignores cache)
+    Gets an OAuth2 access token using MSAL (Original CLI implementation)
     """
     if not OAUTH2_AVAILABLE:
         raise ImportError("msal is not installed. Run: pip install msal")
     
-    authority = f"https://login.microsoftonline.com/{tenant_id}"
-    app = msal.PublicClientApplication(
-        client_id,
-        authority=authority
-    )
-    
-    # Scopes required for IMAP
-    # Note: offline_access is a reserved scope and is handled automatically by MSAL
-    # For personal accounts, use outlook.office.com (without 365)
+    app = build_msal_app(client_id, tenant_id=tenant_id)
     scopes = ["https://outlook.office.com/IMAP.AccessAsUser.All"]
     
     result = None
-    
-    # If not forcing interactive, try to get token from cache first
     if not force_interactive:
         accounts = app.get_accounts()
         if accounts:
-            account = accounts[0]
-            if email_address:
-                # Find account that matches the email
-                matching_accounts = [acc for acc in accounts if acc.get("username") == email_address]
-                if matching_accounts:
-                    account = matching_accounts[0]
+            account = next((acc for acc in accounts if acc.get("username") == email_address), accounts[0])
             result = app.acquire_token_silent(scopes, account=account)
     
-    # If no token in cache or forcing interactive, do interactive login
     if not result:
         print("[*] Opening browser window for OAuth2 authentication...")
-        print("    Please sign in with your Microsoft credentials")
-        result = app.acquire_token_interactive(
-            scopes,
-            # Additional options to improve experience
-            login_hint=email_address,  # Pre-fill email if available
-        )
+        result = app.acquire_token_interactive(scopes, login_hint=email_address)
     
     if "access_token" in result:
-        print("[OK] OAuth2 authentication successful")
         return result["access_token"]
     else:
         error_desc = result.get('error_description', 'Unknown error')
-        error_code = result.get('error', 'Unknown')
-        raise RuntimeError(f"Error getting OAuth2 token [{error_code}]: {error_desc}")
+        raise RuntimeError(f"Error getting OAuth2 token: {error_desc}")
 

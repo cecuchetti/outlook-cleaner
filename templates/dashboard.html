@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Outlook Cleaner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0078d4;
+            --primary-glow: rgba(0, 120, 212, 0.4);
+            --bg: #0a0a0a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text: #ffffff;
+            --text-dim: #a0a0a0;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 120, 212, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+            color: var(--text);
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        nav {
+            padding: 24px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-logo {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-user {
+            font-size: 14px;
+            color: var(--text-dim);
+            background: var(--card-bg);
+            padding: 8px 16px;
+            border-radius: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 48px auto;
+            padding: 0 24px;
+        }
+
+        .hero {
+            margin-bottom: 48px;
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: -1.5px;
+            background: linear-gradient(to right, #fff, #a0a0a0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 32px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sender-pill {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px 16px;
+            border-radius: 12px;
+            margin: 0 8px 8px 0;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .sender-pill:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-action {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px var(--primary-glow);
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px var(--primary-glow);
+            filter: brightness(1.1);
+        }
+
+        .btn-action:active {
+            transform: translateY(0);
+        }
+
+        .api-info {
+            font-family: monospace;
+            background: #111;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            margin-top: 16px;
+            overflow-x: auto;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--success);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: inherit;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-logo">
+            <span style="background: var(--primary); padding: 4px 8px; border-radius: 8px;">📧</span>
+            Outlook Cleaner
+        </div>
+        <div class="nav-user">{{ user_email }}</div>
+    </nav>
+
+    <main>
+        <div class="hero">
+            <div class="status-badge"><span class="status-dot"></span> Service Active</div>
+            <h1>Dashboard</h1>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-title">Senders to Filter</div>
+                <div class="sender-list">
+                    {% for sender in senders %}
+                        <div class="sender-pill">{{ sender }}</div>
+                    {% endfor %}
+                </div>
+                <p style="color: var(--text-dim); font-size: 14px; margin-top: 24px;">
+                    These names are searched in the "From" field of your emails and automatically deleted if there's a match.
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Actions</div>
+                <button class="btn-action" onclick="runCleanup()">Run Cleanup Now</button>
+                <div id="status-msg" style="margin-top: 16px; font-size: 14px; text-align: center;"></div>
+                
+                <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 32px 0;">
+                
+                <div class="card-title" style="font-size: 14px; margin-bottom: 8px;">External Trigger (API)</div>
+                <p style="font-size: 12px; color: var(--text-dim);">Use this endpoint from your other application:</p>
+                <div class="api-info">
+                    POST /api/v1/trigger-clean<br>
+                    Header: X-API-KEY
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function runCleanup() {
+            const btn = document.querySelector('.btn-action');
+            const msg = document.getElementById('status-msg');
+            
+            btn.disabled = true;
+            btn.textContent = 'In progress...';
+            msg.textContent = 'Starting asynchronous cleanup...';
+            msg.style.color = '#fff';
+
+            try {
+                // Use the session-authenticated trigger for the UI
+                const response = await fetch('/trigger', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    msg.textContent = 'Cleanup started successfully! Check your inbox in a few moments.';
+                    msg.style.color = 'var(--success)';
+                } else {
+                    msg.textContent = 'Error starting cleanup. Check the console.';
+                    msg.style.color = '#ec4899';
+                }
+            } catch (e) {
+                msg.textContent = 'Connection error.';
+            } finally {
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = 'Run Cleanup Now';
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>

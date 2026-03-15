@@ -1,5 +1,6 @@
-# Dependencias para outlook-cleaner
-# Para autenticación básica (App Password), no se requieren dependencias adicionales
-# Para OAuth2, instala msal:
 msal>=1.24.0
-
+fastapi>=0.100.0
+uvicorn>=0.22.0
+python-dotenv>=1.0.0
+jinja2>=3.1.0
+itsdangerous>=2.1.0
