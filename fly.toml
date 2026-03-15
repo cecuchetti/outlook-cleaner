@@ -25,6 +25,7 @@ primary_region = 'ams'
 [[mounts]]
   source = "outlook_data"
   destination = "/data"
+  processes = ["app"]
 
 [env]
   CACHE_FILE = "/data/token_cache.json"
