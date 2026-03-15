@@ -20,17 +20,8 @@ def load_config(config_path="config.json"):
     config_file = Path(config_path)
     
     if not config_file.exists():
-        example_file = Path("config.json.example")
-        if example_file.exists():
-            raise FileNotFoundError(
-                f"[ERROR] Configuration file '{config_path}' not found.\n"
-                f"        Copy 'config.json.example' to '{config_path}' and fill in your data."
-            )
-        else:
-            raise FileNotFoundError(
-                f"[ERROR] Configuration file '{config_path}' not found.\n"
-                f"        Create a '{config_path}' file with your configuration."
-            )
+        # Return a minimal empty config if file is missing (common in cloud)
+        return {"email": {}, "oauth2": {}, "cleaning": {}}
     
     try:
         with open(config_file, 'r', encoding='utf-8') as f:

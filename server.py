@@ -60,13 +60,18 @@ async def index(request: Request, token: str = Depends(get_current_user_token)):
     if not token:
         return templates.TemplateResponse("login.html", {"request": request})
     
-    # Load configuration from config.json to show current filters
-    try:
-        from config import load_config
-        config = load_config()
-        senders = config.get("cleaning", {}).get("sender_names_to_search", [])
-    except:
-        senders = []
+    # Load configuration from config.json or SENDER_NAMES env var
+    senders = []
+    env_senders = os.getenv("SENDER_NAMES")
+    if env_senders:
+        senders = [s.strip() for s in env_senders.split(",")]
+    else:
+        try:
+            from config import load_config
+            config = load_config()
+            senders = config.get("cleaning", {}).get("sender_names_to_search", [])
+        except:
+            pass
         
     return templates.TemplateResponse("dashboard.html", {
         "request": request, 
@@ -132,9 +137,16 @@ async def api_trigger(request: Request, background_tasks: BackgroundTasks):
     return {"status": "accepted", "message": "Cleanup process started in background"}
 
 def run_cleanup_task(token):
-    from config import load_config, get_config_value
+    from config import load_config
     config = load_config()
-    senders = config.get("cleaning", {}).get("sender_names_to_search", [])
+    
+    # Get senders from env var or config file
+    env_senders = os.getenv("SENDER_NAMES")
+    if env_senders:
+        senders = [s.strip() for s in env_senders.split(",")]
+    else:
+        senders = config.get("cleaning", {}).get("sender_names_to_search", [])
+        
     email_filter = SenderNameFilter(senders)
     
     clean_inbox(
