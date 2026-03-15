@@ -42,7 +42,6 @@ Open [http://localhost:8000](http://localhost:8000) to login and start cleaning.
 
 ## Installation
 
-<<<<<<< HEAD
 ### Prerequisites
 - Python 3.7+
 - A Microsoft Account (Hotmail/Outlook)
@@ -65,12 +64,7 @@ REDIRECT_URI=http://localhost:8000/callback
 SESSION_SECRET=your_random_secret
 X_API_KEY=your_api_key_for_external_apps
 USER_EMAIL=your_email@hotmail.com
-=======
-1. Clone the repository:
-```bash
-git clone https://github.com/cecuchetti/outlook-cleaner.git
-cd outlook-cleaner
->>>>>>> 3fab7d7d895cea2be3f4877403ff8620a9b04556
+```
 ```
 
 ## Usage
