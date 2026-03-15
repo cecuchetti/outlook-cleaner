@@ -1,18 +1,26 @@
-# fly.toml app configuration file generated for outlook-cleaner
+# fly.toml app configuration file generated for outlook-cleaner on 2026-03-15T15:05:09Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
-app = "outlook-cleaner-app" # The user should change this to their unique app name
-primary_region = "eze" # Change to closest region (e.g., eze for Buenos Aires)
+app = 'outlook-cleaner'
+primary_region = 'ams'
 
 [build]
-  dockerfile = "Dockerfile"
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
-  processes = ["app"]
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+  memory_mb = 256
 
 [[mounts]]
   source = "outlook_data"
